@@ -21,61 +21,42 @@ function parseThreshold(threshold) {
 function evaluate(value, threshold) {
   let { negate, start, end } = parseThreshold(threshold);
   const inRange = value >= start && value <= end;
-  const isWarning = negate ? inRange : !inRange;
-  return { isWarning, start, end, negate };
+  const matched = negate ? inRange : !inRange;
+  return { matched, start, end, negate };
 }
-
-function randomThreshold() {
-  const type = Math.floor(Math.random() * 4);
-  let t;
-  switch (type) {
-    case 0:
-      t = `${Math.floor(Math.random() * 20) + 10}`;
-      break;
-    case 1:
-      const a = Math.floor(Math.random() * 10);
-      const b = a + Math.floor(Math.random() * 20) + 5;
-      t = `${a}:${b}`;
-      break;
-    case 2:
-      const c = Math.floor(Math.random() * 10);
-      const d = c + Math.floor(Math.random() * 10) + 1;
-      t = `@${c}:${d}`;
-      break;
-    default:
-      const max = Math.floor(Math.random() * 30) + 10;
-      t = `~:${max}`;
-  }
-  return t;
-}
-
-function randomValue() {
-  return (Math.random() * 50).toFixed(2);
-}
-
-const thresholdInput = document.getElementById("threshold");
-const valueInput = document.getElementById("value");
-const resultDiv = document.getElementById("result");
-const detailsDiv = document.getElementById("details");
 
 function updateResult() {
-  const threshold = thresholdInput.value.trim();
-  const value = parseFloat(valueInput.value);
+  const value = parseFloat(document.getElementById("value").value);
+  const warn = document.getElementById("threshold_warning").value.trim();
+  const crit = document.getElementById("threshold_critical").value.trim();
 
-  if (threshold === "" || isNaN(value)) {
+  const resultDiv = document.getElementById("result");
+  const detailsDiv = document.getElementById("details");
+
+  if (isNaN(value)) {
     resultDiv.textContent = "Résultat";
     resultDiv.style.backgroundColor = "";
     detailsDiv.textContent = "";
     return;
   }
 
+  let status = "OK",
+    reason = "";
   try {
-    const { isWarning, start, end, negate } = evaluate(value, threshold);
-    const status = isWarning
-      ? value > end || value < start
-        ? "CRITICAL"
-        : "WARNING"
-      : "OK";
+    if (crit) {
+      const r = evaluate(value, crit);
+      if (r.matched) {
+        status = "CRITICAL";
+        reason = `CRITICAL (${r.negate ? "dans" : "hors de"} [${r.start}, ${r.end}])`;
+      }
+    }
+    if (status === "OK" && warn) {
+      const r = evaluate(value, warn);
+      if (r.matched) {
+        status = "WARNING";
+        reason = `WARNING (${r.negate ? "dans" : "hors de"} [${r.start}, ${r.end}])`;
+      }
+    }
 
     resultDiv.textContent = status;
     resultDiv.style.backgroundColor =
@@ -85,29 +66,42 @@ function updateResult() {
           ? "#ffd500"
           : "#ff4d4d";
 
-    const rangeText = negate
-      ? `valeur DOIT être dans [${start}, ${end}]`
-      : `valeur DOIT être hors de [${start}, ${end}]`;
-
-    detailsDiv.textContent = `Seuil : ${threshold}
-Valeur : ${value}
-Statut : ${status} (${rangeText})`;
+    detailsDiv.textContent = `Valeur : ${value}
+Statut : ${status}${reason ? " → " + reason : ""}
+Seuil WARNING : ${warn}
+Seuil CRITICAL : ${crit}`;
   } catch {
-    resultDiv.textContent = "Erreur threshold";
+    resultDiv.textContent = "Erreur";
     resultDiv.style.backgroundColor = "gray";
     detailsDiv.textContent = "";
   }
 }
 
-// Init aléatoire
-thresholdInput.value = randomThreshold();
-valueInput.value = randomValue();
+function randomThreshold() {
+  const a = Math.floor(Math.random() * 10);
+  const b = a + Math.floor(Math.random() * 20) + 5;
+  return `${a}:${b}`;
+}
+
+function randomValue() {
+  return (Math.random() * 50).toFixed(2);
+}
+
+// Init
+document.getElementById("threshold_warning").value = randomThreshold();
+document.getElementById("threshold_critical").value = randomThreshold();
+document.getElementById("value").value = randomValue();
 updateResult();
 
-thresholdInput.addEventListener("input", updateResult);
-valueInput.addEventListener("input", updateResult);
+document
+  .getElementById("threshold_warning")
+  .addEventListener("input", updateResult);
+document
+  .getElementById("threshold_critical")
+  .addEventListener("input", updateResult);
+document.getElementById("value").addEventListener("input", updateResult);
 
-// Nouveau : analyse de perfdata
+// Analyse de perfdata
 document.getElementById("perfdata").addEventListener("input", () => {
   const input = document.getElementById("perfdata").value.trim();
   const match = input.match(/=([^;]+);([^;]*);([^;]*);/);
@@ -118,10 +112,11 @@ document.getElementById("perfdata").addEventListener("input", () => {
     if (!isNaN(parseFloat(value))) {
       document.getElementById("value").value = value;
     }
+    if (warn) {
+      document.getElementById("threshold_warning").value = warn;
+    }
     if (crit) {
-      document.getElementById("threshold").value = crit;
-    } else if (warn) {
-      document.getElementById("threshold").value = warn;
+      document.getElementById("threshold_critical").value = crit;
     }
     updateResult();
   }

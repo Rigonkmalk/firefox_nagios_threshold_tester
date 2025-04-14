@@ -28,17 +28,10 @@
         </style>
     </head>
     <body>
-        <input
-            type="text"
-            id="perfdata"
-            placeholder="Perfdata (ex: temp=-1s;-1:1;-2:2;;)"
-        />
-        <input
-            type="text"
-            id="threshold"
-            placeholder="Threshold Nagios (ex: 10:20)"
-        />
-        <input type="number" id="value" placeholder="Valeur à tester" />
+        <input type="text" id="perfdata" placeholder="Perfdata (ex: temp=-1s;-1:1;-2:2;;)">
+        <input type="text" id="threshold_warning" placeholder="Seuil WARNING (ex: 10:20)">
+        <input type="text" id="threshold_critical" placeholder="Seuil CRITICAL (ex: 5:25)">
+        <input type="number" id="value" placeholder="Valeur à tester">
         <div id="result">Résultat</div>
         <div id="details"></div>
 
