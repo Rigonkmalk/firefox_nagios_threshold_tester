@@ -1,0 +1,11 @@
+{
+  "manifest_version": 2,
+  "name": "Nagios Threshold Tester",
+  "version": "1.0",
+  "description": "Test Nagios threshold expressions against values.",
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "permissions": []
+}

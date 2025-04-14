@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <style>
+            body {
+                font-family: sans-serif;
+                width: 270px;
+                padding: 10px;
+            }
+            input {
+                width: 100%;
+                padding: 5px;
+                margin-bottom: 10px;
+                font-size: 14px;
+            }
+            #result {
+                font-weight: bold;
+                text-align: center;
+                padding: 10px;
+                border-radius: 5px;
+            }
+            #details {
+                margin-top: 10px;
+                font-size: 12px;
+                white-space: pre-wrap;
+            }
+        </style>
+    </head>
+    <body>
+        <input
+            type="text"
+            id="perfdata"
+            placeholder="Perfdata (ex: temp=-1s;-1:1;-2:2;;)"
+        />
+        <input
+            type="text"
+            id="threshold"
+            placeholder="Threshold Nagios (ex: 10:20)"
+        />
+        <input type="number" id="value" placeholder="Valeur à tester" />
+        <div id="result">Résultat</div>
+        <div id="details"></div>
+
+        <script src="popup.js"></script>
+    </body>
+</html>
