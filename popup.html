@@ -3,37 +3,166 @@
     <head>
         <meta charset="utf-8" />
         <style>
-            body {
-                font-family: sans-serif;
-                width: 270px;
-                padding: 10px;
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
             }
-            input {
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                width: 320px;
+                padding: 12px;
+                background: #1e1e2e;
+                color: #cdd6f4;
+            }
+            h3 {
+                font-size: 13px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: #a6adc8;
+                margin-bottom: 6px;
+                margin-top: 10px;
+            }
+            h3:first-of-type {
+                margin-top: 0;
+            }
+            input, select {
                 width: 100%;
-                padding: 5px;
-                margin-bottom: 10px;
-                font-size: 14px;
+                padding: 7px 10px;
+                margin-bottom: 6px;
+                font-size: 13px;
+                border: 1px solid #45475a;
+                border-radius: 4px;
+                background: #313244;
+                color: #cdd6f4;
+                outline: none;
+                transition: border-color 0.2s;
+            }
+            input:focus, select:focus {
+                border-color: #89b4fa;
+            }
+            input::placeholder {
+                color: #6c7086;
+            }
+            select {
+                cursor: pointer;
+                display: none;
+            }
+            select.visible {
+                display: block;
+            }
+            .row {
+                display: flex;
+                gap: 6px;
+            }
+            .row input {
+                flex: 1;
+            }
+            .label-row {
+                display: flex;
+                gap: 6px;
+            }
+            .label-row span {
+                flex: 1;
+                font-size: 11px;
+                color: #6c7086;
+                margin-bottom: 2px;
             }
             #result {
                 font-weight: bold;
+                font-size: 15px;
                 text-align: center;
                 padding: 10px;
-                border-radius: 5px;
+                border-radius: 6px;
+                margin-top: 10px;
+                color: #1e1e2e;
+                transition: background-color 0.3s;
+            }
+            #range-bar {
+                position: relative;
+                height: 22px;
+                background: #313244;
+                border-radius: 4px;
+                margin-top: 10px;
+                overflow: hidden;
+            }
+            #range-bar .zone {
+                position: absolute;
+                top: 0;
+                height: 100%;
+                opacity: 0.5;
+            }
+            #range-bar .marker {
+                position: absolute;
+                top: 0;
+                width: 3px;
+                height: 100%;
+                background: #cdd6f4;
+                border-radius: 1px;
+                z-index: 2;
+            }
+            #range-bar .marker-label {
+                position: absolute;
+                top: -14px;
+                font-size: 10px;
+                color: #cdd6f4;
+                transform: translateX(-50%);
+                white-space: nowrap;
             }
             #details {
-                margin-top: 10px;
-                font-size: 12px;
+                margin-top: 8px;
+                font-size: 11px;
                 white-space: pre-wrap;
+                color: #a6adc8;
+                line-height: 1.5;
+            }
+            .btn-row {
+                display: flex;
+                gap: 6px;
+                margin-top: 8px;
+            }
+            button {
+                flex: 1;
+                padding: 6px;
+                font-size: 12px;
+                border: 1px solid #45475a;
+                border-radius: 4px;
+                background: #313244;
+                color: #cdd6f4;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+            button:hover {
+                background: #45475a;
             }
         </style>
     </head>
     <body>
-        <input type="text" id="perfdata" placeholder="Perfdata (ex: temp=-1s;-1:1;-2:2;;)">
-        <input type="text" id="threshold_warning" placeholder="Seuil WARNING (ex: 10:20)">
-        <input type="text" id="threshold_critical" placeholder="Seuil CRITICAL (ex: 5:25)">
-        <input type="number" id="value" placeholder="Valeur à tester">
-        <div id="result">Résultat</div>
+        <h3>Perfdata</h3>
+        <input type="text" id="perfdata" placeholder="label=value[UOM];warn;crit;min;max">
+        <select id="metric-select"></select>
+
+        <h3>Thresholds</h3>
+        <div class="label-row">
+            <span>Warning</span>
+            <span>Critical</span>
+        </div>
+        <div class="row">
+            <input type="text" id="threshold_warning" placeholder="ex: 10:20">
+            <input type="text" id="threshold_critical" placeholder="ex: 5:25">
+        </div>
+
+        <h3>Value</h3>
+        <input type="text" id="value" placeholder="Value to test">
+
+        <div id="result">Result</div>
+        <div id="range-bar"></div>
         <div id="details"></div>
+
+        <div class="btn-row">
+            <button id="btn-random">Random</button>
+            <button id="btn-clear">Clear</button>
+        </div>
 
         <script src="popup.js"></script>
     </body>
